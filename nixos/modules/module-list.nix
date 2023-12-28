@@ -44,6 +44,7 @@
   ./config/xdg/portal.nix
   ./config/xdg/portals/lxqt.nix
   ./config/xdg/portals/wlr.nix
+  ./config/xdg/portals/termfilechooser.nix
   ./config/xdg/sounds.nix
   ./config/zram.nix
   ./hardware/acpilight.nix
