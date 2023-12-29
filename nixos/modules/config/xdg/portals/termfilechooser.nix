@@ -1,16 +1,17 @@
-{ config, pkgs, lib, ... }:
-
-with lib;
-
-let
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+with lib; let
   cfg = config.xdg.portal.termfilechooser;
   package = pkgs.xdg-desktop-portal-termfilechooser;
-  settingsFormat = pkgs.formats.ini { };
+  settingsFormat = pkgs.formats.ini {};
   configFile = settingsFormat.generate "xdg-desktop-portal-termfilechooser.ini" cfg.settings;
-in
-{
+in {
   meta = {
-    maintainers = with maintainers; [ soispha ];
+    maintainers = with maintainers; [soispha];
   };
 
   options.xdg.portal.termfilechooser = {
@@ -34,18 +35,14 @@ in
         freeformType = settingsFormat.type;
       };
 
-      default = { };
+      default = {};
 
       # Example taken from the manpage
       example = literalExpression ''
         {
-          screencast = {
-            output_name = "HDMI-A-1";
-            max_fps = 30;
-            exec_before = "disable_notifications.sh";
-            exec_after = "enable_notifications.sh";
-            chooser_type = "simple";
-            chooser_cmd = "''${pkgs.slurp}/bin/slurp -f %o -or";
+          filechooser = {
+            cmd = ./your/command/ranger-wrapper.sh;
+            default_dir = "./tmp";
           };
         }
       '';
@@ -55,14 +52,19 @@ in
   config = mkIf cfg.enable {
     xdg.portal = {
       enable = true;
-      extraPortals = [ package ];
+      extraPortals = [package];
     };
 
-    systemd.user.services.xdg-desktop-portal-termfilechooser.serviceConfig.ExecStart = [
-      # Empty ExecStart value to override the field
-      ""
-      "${package}/libexec/xdg-desktop-portal-termfilechooser --config=${configFile}"
-    ];
+    systemd.user.services.xdg-desktop-portal-termfilechooser = {
+      overrideStrategy = "asDropinIfExists";
+
+      # override default exec start
+      scriptArgs = "--config=${configFile}";
+      serviceConfig.ExecStart = [
+        # Empty ExecStart value to override the field
+        ""
+        "${package}/libexec/xdg-desktop-portal-termfilechooser --config=${configFile}"
+      ];
+    };
   };
 }
-
