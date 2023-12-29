@@ -14,6 +14,7 @@
 , systemd
 , wayland
 }:
+
 stdenv.mkDerivation {
   pname = "xdg-desktop-portal-termfilechooser";
   version = "0.1.1";
@@ -21,12 +22,14 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "nani8ot";
     repo = "xdg-desktop-portal-termfilechooser";
-    rev = "main";
-    sha256 = "sha256-4s3n5EONwmDhdMrs7NdCqM/IAcNXmmbuhv84btCredg=";
+    rev = "4e0db3d4c1639582420847393884ca6bb990cfe5";
+    hash = "sha256-4s3n5EONwmDhdMrs7NdCqM/IAcNXmmbuhv84btCredg=";
   };
 
   strictDeps = true;
+
   depsBuildBuild = [ pkg-config ];
+
   nativeBuildInputs = [
     meson
     ninja
@@ -35,6 +38,7 @@ stdenv.mkDerivation {
     wayland-scanner
     makeWrapper
   ];
+
   buildInputs = [
     inih
     libdrm
@@ -45,7 +49,7 @@ stdenv.mkDerivation {
   ];
 
   mesonFlags = [
-    "-Dsd-bus-provider=libsystemd"
+    (lib.mesonOption "sd-bus-provider" "libsystemd")
   ];
 
   meta = with lib; {
