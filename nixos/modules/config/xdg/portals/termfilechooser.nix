@@ -23,6 +23,14 @@ in {
       configuration file
     '');
 
+    logLevel = mkOption {
+      description = lib.mdDoc ''
+        Which log level to use
+      '';
+      type = types.enum ["QUIET" "ERROR" "WARN" "INFO" "DEBUG" "TRACE"];
+      default = "ERROR";
+    };
+
     settings = mkOption {
       description = lib.mdDoc ''
         Configuration for `xdg-desktop-portal-termfilechooser`.
@@ -41,8 +49,10 @@ in {
       example = literalExpression ''
         {
           filechooser = {
+            # Beware that the script will be executed from a systemd service, thus, none
+            # of your enviroment variables will be set including PATH
             cmd = ./your/command/ranger-wrapper.sh;
-            default_dir = "./tmp";
+            default_dir = "/tmp";
           };
         }
       '';
@@ -59,11 +69,10 @@ in {
       overrideStrategy = "asDropinIfExists";
 
       # override default exec start
-      scriptArgs = "--config=${configFile}";
       serviceConfig.ExecStart = [
         # Empty ExecStart value to override the field
         ""
-        "${package}/libexec/xdg-desktop-portal-termfilechooser --config=${configFile}"
+        "${package}/libexec/xdg-desktop-portal-termfilechooser --config=${configFile} --loglevel=${cfg.logLevel}"
       ];
     };
   };
