@@ -44,7 +44,7 @@ buildPythonPackage rec {
     owner = "jeertmans";
     repo = "manim-slides";
     rev = "refs/tags/v${version}";
-    sha256 = "sha256-WZR95swapT2Fbu6mbuHLjMu3Okq/wKFabzN7xpZw0/g=";
+    hash = "sha256-WZR95swapT2Fbu6mbuHLjMu3Okq/wKFabzN7xpZw0/g=";
   };
 
   nativeBuildInputs = [
@@ -59,36 +59,40 @@ buildPythonPackage rec {
     "qtpy"
   ];
 
-  propagatedBuildInputs = [
-    av
-    click
-    click-default-group
-    jinja2
-    lxml
-    numpy
-    opencv4
-    pillow
-    pydantic
-    pydantic-extra-types
-    python-pptx
-    qtpy
-    requests
-    rich
-    rtoml
-    tqdm
+  propagatedBuildInputs =
+    [
+      av
+      click
+      click-default-group
+      jinja2
+      lxml
+      numpy
+      opencv4
+      pillow
+      pydantic
+      pydantic-extra-types
+      python-pptx
+      qtpy
+      requests
+      rich
+      rtoml
+      tqdm
 
-    # avconv is a potential alternative
-    ffmpeg
-    # This could also be manimgl, but that is not (yet) packaged
-    manim
-  ] ++ (if ! withGui then [ ipython ] else [ ]);
+      # avconv is a potential alternative
+      ffmpeg
+      # This could also be manimgl, but that is not (yet) packaged
+      manim
+    ]
+    ++ lib.lists.optional withGui ipython;
 
   pythonImportsCheck = [ "manim_slides" ];
 
   meta = with lib; {
+    changelog = "https://github.com/jeertmans/manim-slides/blob/${src.rev}/CHANGELOG.md";
     description = "Tool for live presentations using manim";
-    homepage = "https://github.com/jeertmans/manim-slides/";
+    homepage = "https://github.com/jeertmans/manim-slides";
     license = licenses.mit;
+    mainProgram = "manim-slides";
     maintainers = with maintainers; [ soispha ];
   };
 }
